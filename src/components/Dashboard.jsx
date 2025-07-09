@@ -77,7 +77,7 @@ export default function Dashboard() {
   const currentData = filteredData.slice(startIdx, startIdx + pageSize);
 
   return (
-    <div className="w-full pt-[8%] bg-gray-100 flex justify-center items-center font-poppins">
+    <div className="w-full pt-[25%] md:pt-[8%] bg-gray-100 flex justify-center items-center font-poppins">
       <div className="p-4 w-full md:w-[90%] lg:w-[80%]">
         <SearchBar
           onSearch={handleSearch}
