@@ -17,7 +17,7 @@ export default function Profile() {
   console.log(user)
 
   const handleBackDashboard = () => {
-    navigate("/")
+    navigate("/dashboard")
   }
 
   if (!user) return <Loading/>
