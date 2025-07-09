@@ -14,7 +14,7 @@ export default function Profile() {
     fetchUsers().then((data) => setUser(data[0]));
   }, []);
 
-  console.log(user)
+  // console.log(user)
 
   const handleBackDashboard = () => {
     navigate("/dashboard")

@@ -4,6 +4,7 @@ import { fetchComments } from "../../api";
 import Table from "./Table";
 import SearchBar from "./SearchBar";
 import Partial from "./Partial";
+import TableShimmerUi from "./TableShimmerUI";
 
 import {
   sortByName,
@@ -11,8 +12,6 @@ import {
   sortByEmail,
   filterBySearchTerm,
 } from "../utils/helpers";
-
-import TableShimmerUi from "./TableShimmerUI";
 
 export default function Dashboard() {
   const [comments, setComments] = useState([]);
@@ -23,22 +22,29 @@ export default function Dashboard() {
   const [currentPage, setCurrentPage] = useState(() => Number(sessionStorage.getItem("currentPage")) || 1);
   const [loading, setLoading] = useState(true);
 
-  // Fetch comments with minimum shimmer delay
+  // Fetch comments with delay for shimmer UI
   useEffect(() => {
     setLoading(true);
     const startTime = Date.now();
 
-    fetchComments().then((data) => {
-      const elapsed = Date.now() - startTime;
-      const delay = Math.max(0, 600 - elapsed);
-      setTimeout(() => {
-        setComments(data);
+    fetchComments()
+      .then((data) => {
+        const safeData = Array.isArray(data) ? data : [];
+        const elapsed = Date.now() - startTime;
+        const delay = Math.max(0, 600 - elapsed);
+        setTimeout(() => {
+          setComments(safeData);
+          setLoading(false);
+        }, delay);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch comments:", err);
+        setComments([]);
         setLoading(false);
-      }, delay);
-    });
+      });
   }, []);
 
-  // Store filter/sort/pagination in sessionStorage
+  // Save state to sessionStorage
   useEffect(() => {
     sessionStorage.setItem("searchTerm", searchTerm);
     sessionStorage.setItem("sortField", sortField);
@@ -63,8 +69,9 @@ export default function Dashboard() {
     setCurrentPage(1);
   };
 
-  // Filtered & Sorted Data
+  // Filter and sort data
   let filteredData = filterBySearchTerm(comments, searchTerm);
+
   if (sortOrder !== 0) {
     if (sortField === "name") filteredData = sortByName(filteredData, sortOrder);
     else if (sortField === "email") filteredData = sortByEmail(filteredData, sortOrder);
